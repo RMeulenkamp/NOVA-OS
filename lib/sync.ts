@@ -19,7 +19,7 @@ export function syncUser(user: NovaUser): void {
   const sb = getSupabase()
   if (!sb) return
 
-  silent('user', () =>
+  silent('user', async () =>
     sb.from('users').upsert({
       id: user.id,
       name: user.name,
@@ -45,7 +45,7 @@ export function syncCheckIn(checkIn: DailyCheckIn): void {
   const sb = getSupabase()
   if (!sb) return
 
-  silent('check-in', () =>
+  silent('check-in', async () =>
     sb.from('daily_check_ins').upsert({
       id: checkIn.id,
       user_id: checkIn.userId,
@@ -74,7 +74,7 @@ export function syncEmergencyEvent(event: EmergencyEvent): void {
   const sb = getSupabase()
   if (!sb) return
 
-  silent('emergency', () =>
+  silent('emergency', async () =>
     sb.from('emergency_events').upsert({
       id: event.id,
       user_id: event.userId,
