@@ -38,6 +38,10 @@ export interface NovaUser {
   inProgram?: boolean              // Currently enrolled in the 7-week Abundant Energy Reset
   programWeek?: number             // Which week of the program they're on (1–7)
   energyResetCompleted?: boolean   // Has completed the full 7-week Abundant Energy Reset
+  // ── Monetisation ──
+  isPro?: boolean                  // Paid NOVA Pro — unlimited chat messages
+  chatMessagesUsed?: number        // Messages used in the current week
+  chatMessageLastReset?: string    // ISO date of the last weekly reset (Monday)
 }
 
 // ─── Daily Check-In ───────────────────────────────────────────────────────────

@@ -2,12 +2,19 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { getChatMessages, saveChatMessage, clearChatHistory, generateId } from '@/lib/storage'
+import {
+  getChatMessages,
+  saveChatMessage,
+  clearChatHistory,
+  generateId,
+  getChatMessagesRemaining,
+  incrementChatMessages,
+} from '@/lib/storage'
 import { TopBar, BottomNav } from '@/components/Navigation'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 import type { ChatMessage } from '@/lib/types'
-import { Send, Trash2, MessageSquare } from 'lucide-react'
+import { Send, Trash2, MessageSquare, Lock, Zap } from 'lucide-react'
 
 const STARTER_PROMPTS = [
   "I can't get anything done today.",
@@ -21,13 +28,16 @@ const STARTER_PROMPTS = [
 ]
 
 export default function CoachPage() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingText, setStreamingText] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  const remaining = user ? getChatMessagesRemaining(user) : 0
+  const isLimitReached = !user?.isPro && remaining <= 0
 
   useEffect(() => {
     if (user) {
@@ -43,6 +53,7 @@ export default function CoachPage() {
   async function sendMessage(text?: string) {
     const content = (text || input).trim()
     if (!content || !user || isStreaming) return
+    if (isLimitReached) return
 
     const userMessage: ChatMessage = {
       id: generateId(),
@@ -58,6 +69,17 @@ export default function CoachPage() {
     setInput('')
     setIsStreaming(true)
     setStreamingText('')
+
+    // Increment the weekly counter immediately
+    const monday = new Date()
+    const day = monday.getDay()
+    const diff = day === 0 ? -6 : 1 - day
+    monday.setDate(monday.getDate() + diff)
+    const mondayStr = monday.toISOString().split('T')[0]
+    const usedThisWeek = (!user.chatMessageLastReset || user.chatMessageLastReset < mondayStr)
+      ? 0
+      : (user.chatMessagesUsed ?? 0)
+    updateUser({ chatMessagesUsed: usedThisWeek + 1, chatMessageLastReset: mondayStr })
 
     try {
       const apiMessages = updatedMessages.map((m) => ({
@@ -126,14 +148,30 @@ export default function CoachPage() {
         subtitle="Talk through what's happening"
         showBack
         rightAction={
-          hasMessages ? (
-            <button
-              onClick={handleClearHistory}
-              className="w-8 h-8 rounded-lg bg-nova-surface border border-nova-border flex items-center justify-center text-nova-dim hover:text-nova-danger transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-            </button>
-          ) : undefined
+          <div className="flex items-center gap-2">
+            {/* Message counter */}
+            {!user?.isPro && (
+              <div className={cn(
+                'flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border',
+                remaining <= 2
+                  ? 'bg-red-500/10 border-red-500/30 text-red-400'
+                  : remaining <= 5
+                  ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400'
+                  : 'bg-nova-surface border-nova-border text-nova-muted'
+              )}>
+                <MessageSquare className="w-3 h-3" />
+                {remaining} left
+              </div>
+            )}
+            {hasMessages && (
+              <button
+                onClick={handleClearHistory}
+                className="w-8 h-8 rounded-lg bg-nova-surface border border-nova-border flex items-center justify-center text-nova-dim hover:text-nova-danger transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         }
       />
 
@@ -210,38 +248,62 @@ export default function CoachPage() {
       {/* Input area */}
       <div className="fixed bottom-16 left-0 right-0 bg-nova-bg/95 backdrop-blur-xl border-t border-nova-border">
         <div className="max-w-lg mx-auto px-4 py-3">
-          <div className="flex items-end gap-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="What's happening right now?"
-              rows={1}
-              className="nova-input resize-none flex-1 min-h-[44px] max-h-32 py-2.5 text-sm"
-              style={{ height: 'auto' }}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement
-                target.style.height = 'auto'
-                target.style.height = `${Math.min(target.scrollHeight, 128)}px`
-              }}
-            />
-            <button
-              onClick={() => sendMessage()}
-              disabled={!input.trim() || isStreaming}
-              className={cn(
-                'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200',
-                input.trim() && !isStreaming
-                  ? 'bg-nova-accent text-white hover:bg-nova-accent-soft'
-                  : 'bg-nova-surface border border-nova-border text-nova-dim cursor-not-allowed'
-              )}
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-          <p className="text-[10px] text-nova-dim text-center mt-2">
-            Press Enter to send · Shift+Enter for new line
-          </p>
+          {isLimitReached ? (
+            /* Limit reached — upgrade prompt */
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-nova-accent/5 border border-nova-accent/20">
+              <div className="w-8 h-8 rounded-lg bg-nova-accent/10 flex items-center justify-center flex-shrink-0">
+                <Lock className="w-4 h-4 text-nova-accent" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-nova-text-bright">Weekly limit reached</p>
+                <p className="text-xs text-nova-muted mt-0.5">Upgrade to NOVA Pro for unlimited coaching messages</p>
+              </div>
+              <a
+                href="https://www.nova-method.com/nova-pro"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-nova-accent text-nova-bg text-xs font-semibold hover:opacity-90 transition-opacity flex-shrink-0"
+              >
+                <Zap className="w-3 h-3" />
+                Upgrade
+              </a>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-end gap-2">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="What's happening right now?"
+                  rows={1}
+                  className="nova-input resize-none flex-1 min-h-[44px] max-h-32 py-2.5 text-sm"
+                  style={{ height: 'auto' }}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement
+                    target.style.height = 'auto'
+                    target.style.height = `${Math.min(target.scrollHeight, 128)}px`
+                  }}
+                />
+                <button
+                  onClick={() => sendMessage()}
+                  disabled={!input.trim() || isStreaming}
+                  className={cn(
+                    'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200',
+                    input.trim() && !isStreaming
+                      ? 'bg-nova-accent text-white hover:bg-nova-accent-soft'
+                      : 'bg-nova-surface border border-nova-border text-nova-dim cursor-not-allowed'
+                  )}
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-[10px] text-nova-dim text-center mt-2">
+                Press Enter to send · Shift+Enter for new line
+              </p>
+            </>
+          )}
         </div>
       </div>
 

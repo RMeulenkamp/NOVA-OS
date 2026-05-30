@@ -302,6 +302,139 @@ WHAT NOVA KNOWS ABOUT PROGRAM USERS:
   discipline — explain this is when the hypothalamus is "learning" its new set point.
 - Weight loss, if it occurs, is a side effect of hypothalamic reset, not the goal.
   The primary goal is always stable, abundant energy and hormonal regulation.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+THE 21-DAY METABOLIC DIET — DETAILED PROTOCOL (Rudolf Binder MD)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THE 7 PILLARS (why this diet works):
+1. Effective weight loss via sensible energy balance
+2. Lasting success by re-setting the "weight memory"
+3. Firmer skin and tissue by maintaining/improving pH balance
+4. Maintaining performance by reducing oxidative stress and eliminating toxins
+5. Positively impacting the immune system by regulating the intestinal flora
+6. Strengthening body, mind and soul: Omega-3 fatty acids
+7. Changes to the "inner self" — mindset and belief patterns
+
+LOADING PHASE (2 days — before strict phase):
+- Take the activator (Enerxan) evenly throughout the day: before breakfast, lunch,
+  dinner, and once before bedtime. At least 20 minutes before eating/drinking.
+- Eat whatever you like — preferably lots of fatty, high-calorie foods.
+- Goal: flood the body with calories so the metabolic switch is dramatic and effective.
+- It is normal for weight to increase by 1-2 kg over these 2 days.
+
+DIET PHASE (strict, 21+ days) — DAILY MEAL PLAN:
+- Breakfast: 30g (1 oz) protein shake (aspartame-free) made with water
+- Mid-morning snack: 1 piece of fruit if needed — max 100g. Only if really necessary.
+- Lunch: 120g (4.25 oz) cooked protein + vegetables/salad as much as you like
+- Afternoon snack: 1 piece of fruit if needed — max 110g. Only if really necessary.
+- Dinner: 110g (4 oz) cooked protein + vegetables or salad as much as you want
+- Snacks: Wasa cracker max 1/day OR Grissini max 2/day
+- Liquids: At least 2 litres (3.5 pts) per day
+- For best fat loss: skip the fruit and crackers entirely — the body burns stored fat instead.
+- Duration: minimum 21 days. If you eat something not on the list, extend by 3 days per cheat.
+- Maximum 6 weeks without a medical check — if more fat loss needed, take a break first.
+
+APPROVED FOODS (diet phase):
+- Proteins: lean meat (chicken, turkey, veal), white fish, shellfish, eggs, low-fat quark/yoghurt
+- Vegetables: all non-starchy vegetables — cucumber, tomato, lettuce, spinach, courgette,
+  broccoli, cauliflower, celery, radish, Belgian endives, salsify, Jerusalem artichokes
+- Fruits (limited): apple, orange, strawberries, grapefruit — only the small portions above
+- Allowed liquids: water, tea, coffee (no milk, no sugar)
+- NOT ALLOWED: bread, pasta, rice, potatoes, sweet potato, corn, sugar, honey, alcohol,
+  dairy with fat, cooking oils (during strict phase), processed foods
+
+STABILISATION PHASE (21 days after strict phase):
+- Stop the activator. Eat as before for 2 more days until its effect fades.
+- Day 3: weigh yourself — this is your new "set point" weight.
+- Still NO carbohydrates (bread, rice, pasta, potatoes) and NO sugar.
+- NO alcohol.
+- Healthy fats now reintroduced: olive oil, linseed oil, avocado, nuts, cheese, eggs.
+- Protein amounts can increase — add dairy products, eggs, nuts, legumes.
+- More fruit is allowed now.
+- Supplement schedule same as diet phase.
+- The hypothalamus is establishing your new weight memory — this is critical.
+- Small fluctuations of 1 kg are normal.
+
+TEST PHASE (3+ months after stabilisation):
+- Focus: keep the weight lost and not fall back into old habits.
+- Gradually reintroduce vegetables → more fruit → different breads, potatoes, rice, pasta.
+- Stay no more than 2-3 kg from your set-point.
+- Test your personal food tolerances — observe how your body reacts to each new food.
+- Continue basic nutritional supplements for ongoing cell health.
+- Keep: plenty of water, low sugar, sufficient essential fatty acids, high quality protein,
+  regular exercise, adequate sleep, stress management.
+
+SUPPLEMENT SCHEDULE — DIET + STRICT PHASE (from Lifeplus):
+Morning:
+  - Comprehensive vitamin mineral drink with fibre (Daily BioBasics): 2 scoops
+  - Organic sulphur / MSM Plus: 4 tablets
+  - Antioxidants (Proanthenols): 2 tablets
+  - Omega-3 fatty acids (OmeGold): 1 capsule
+Evening:
+  - Organic sulphur / MSM Plus: 4 tablets
+  - Omega-3 fatty acids (OmeGold): 1 capsule
+Note: Take antioxidants at least 30 minutes before a meal for best results.
+
+SUPPLEMENT SCHEDULE — STABILISATION PHASE:
+(Same as diet phase — sulphur and Omega-3 optional but recommended)
+Morning: Daily BioBasics 2 scoops + optional MSM 4 tabs + Antioxidants 2 tabs + OmeGold 1 cap
+Evening: optional MSM 4 tabs + OmeGold 1 cap
+
+SUPPLEMENT SCHEDULE — TEST PHASE (maintenance):
+Morning: Multivitamin/minerals 2 tabs + organic sulphur 4 tabs + antioxidants 2 tabs + Omega-3 1 cap
+Midday: Multivitamin/minerals 2 tabs
+Evening: Multivitamin/minerals 2 tabs + organic sulphur 4 tabs + Omega-3 1 cap
+
+WHY MICRONUTRIENTS ARE ESSENTIAL ON THIS PROTOCOL:
+- During the strict phase, caloric intake is very low → fewer nutrients from food.
+- Fat-burning also increases the body's need for micronutrients (to process the metabolic waste).
+- A lack of micronutrients increases susceptibility to infection.
+- Modern food contains up to 45% fewer nutrients than 30+ years ago.
+- Even people eating well rarely meet recommended daily allowances for all micronutrients.
+- Lifeplus products are cold-processed, preserving enzyme and vitamin potency.
+- They contain no synthetic fillers — instead: herbs, phytonutrients, plant enzymes, 30+ fruits/veg.
+
+KEY MICRONUTRIENT SCIENCE:
+Organic Sulphur (MSM):
+  - Plays a vital role in protein metabolism and waste elimination.
+  - Heavy metals and toxins attach to cell membranes where sulphur should be.
+  - High-dose MSM displaces these toxins and enables their removal.
+  - Also excellent for joints, connective tissue, dental and gum health.
+  - Chlorella algae acts as a binder to help eliminate the released toxins.
+
+Omega-3 (DHA + EPA):
+  - DHA and EPA are the most important long-chain Omega-3 fatty acids.
+  - Anti-inflammatory and vasodilating effect (vs Omega-6 which are pro-inflammatory).
+  - Current Western diet ratio is 32:1 (Omega-6:Omega-3) — recommended is 4:1.
+  - Critical for brain function, mood (neurotransmitters serotonin + dopamine), hormones.
+  - Important in new research on depression, AD(H)S, dementia, and neurodegeneration.
+  - Source must be wild coldwater fish — farmed fish have much less DHA/EPA.
+  - Recommended: 1-3g per day, taken with food.
+
+Antioxidants (Proanthenols / OPCs):
+  - During the metabolic reset, more free radicals are produced as fat is broken down.
+  - These must be neutralised immediately to prevent cellular damage.
+  - OPCs (from grape seed) and Vitamin C, E, selenium, zinc are exogenous antioxidants.
+  - Selenium: strengthens immune system, anti-carcinogenic, critical for thyroid.
+  - Vitamin D: deficiency linked to allergies, autoimmune disease, dementia, cancer.
+
+Intestinal Flora (Pillar 5):
+  - ~100 billion bacteria from 500 strains live in the intestines.
+  - 2/3 of immune cells are found around the intestines.
+  - During the metabolic reset, the intestinal environment changes — support it with:
+    * Probiotics (lactobacilli, bifidobacteria)
+    * Prebiotics from fibre-rich vegetables (Belgian endives, salsify, Jerusalem artichokes)
+  - Lean meats preferred: veal, poultry, turkey. Dark meat (beef, game) should be chewed well.
+  - Non-oily fish recommended. Avoid fried or overheated fats (trans fats).
+
+MINDSET (Pillar 7):
+  - "It does not matter how you start but how you finish."
+  - Belief patterns ("it won't work anyway", "my body always reacts differently") actively
+    sabotage success before you begin. Recognise these as automatic protective responses.
+  - Stagnation and fluctuation during the diet are absolutely normal — not failure.
+  - The body does NOT change uniformly. Plateaus are part of the process.
+  - If you cheat: extend by 3 days, don't restart from zero. Momentum matters.
 `
 
 // ─── Core system prompt (used in all API calls) ────────────────────────────────

@@ -35,6 +35,9 @@ export function syncUser(user: NovaUser): void {
       in_program: user.inProgram ?? false,
       program_week: user.programWeek ?? null,
       energy_reset_completed: user.energyResetCompleted ?? false,
+      is_pro: user.isPro ?? false,
+      chat_messages_used: user.chatMessagesUsed ?? 0,
+      chat_message_last_reset: user.chatMessageLastReset ?? null,
     })
   )
 }

@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, ScanLine, Zap, MessageSquare, Clock } from 'lucide-react'
+import { LayoutDashboard, ScanLine, Zap, MessageSquare, Star } from 'lucide-react'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/scanner', label: 'Scanner', icon: ScanLine },
   { href: '/emergency', label: 'Emergency', icon: Zap },
   { href: '/coach', label: 'Coach', icon: MessageSquare },
-  { href: '/history', label: 'History', icon: Clock },
+  { href: '/member-hub', label: 'Hub', icon: Star },
 ]
 
 export function BottomNav() {

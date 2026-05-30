@@ -211,6 +211,49 @@ export function getRecentPattern(): string | null {
   return null
 }
 
+// ─── Chat message limits (free tier) ─────────────────────────────────────────
+
+const FREE_MESSAGES_PER_WEEK = 10
+
+/** Returns the ISO date string for the most recent Monday (weekly reset anchor) */
+function getMondayDate(): string {
+  const d = new Date()
+  const day = d.getDay() // 0=Sun, 1=Mon, ...
+  const diff = day === 0 ? -6 : 1 - day // adjust to Monday
+  d.setDate(d.getDate() + diff)
+  return d.toISOString().split('T')[0]
+}
+
+/**
+ * Returns how many free messages the user has used this week.
+ * Resets automatically when a new Monday is detected.
+ */
+export function getChatMessagesUsedThisWeek(user: NovaUser): number {
+  const monday = getMondayDate()
+  // If last reset was before this Monday, counter resets to 0
+  if (!user.chatMessageLastReset || user.chatMessageLastReset < monday) return 0
+  return user.chatMessagesUsed ?? 0
+}
+
+/** Returns remaining free messages this week (always 999 for Pro users) */
+export function getChatMessagesRemaining(user: NovaUser): number {
+  if (user.isPro) return 999
+  return Math.max(0, FREE_MESSAGES_PER_WEEK - getChatMessagesUsedThisWeek(user))
+}
+
+/** Increments the weekly chat counter. Call this after a message is sent. */
+export function incrementChatMessages(user: NovaUser): NovaUser {
+  const monday = getMondayDate()
+  const usedThisWeek = getChatMessagesUsedThisWeek(user)
+  const updated: NovaUser = {
+    ...user,
+    chatMessagesUsed: usedThisWeek + 1,
+    chatMessageLastReset: monday,
+  }
+  saveUser(updated)
+  return updated
+}
+
 // ─── Clear all data ───────────────────────────────────────────────────────────
 
 export function clearAllData(): void {
