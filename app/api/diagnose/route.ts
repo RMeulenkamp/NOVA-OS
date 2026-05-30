@@ -21,41 +21,34 @@ export async function POST(req: NextRequest) {
       .map(a => `[${a.area.toUpperCase()}] ${a.question}\nAnswer: ${a.answer}`)
       .join('\n\n')
 
-    const prompt = `You are an energy regulation coach using the NOVA Method. Analyse these answers and return a diagnosis as a raw JSON object.
+    const prompt = `You are an energy regulation coach using the NOVA Method. Analyse these diagnostic answers and return a diagnosis.
 
-NOVA Method: low energy is a regulation problem, not discipline. The hypothalamus is a safety gate. When unsafe signals come in, it withholds energy.
+NOVA Method: low energy is a regulation problem not discipline. The hypothalamus is a safety gate. Unsafe signals = withheld energy.
 
 Three signals: BODY (blood sugar, nutrition, stimulants, tension, sleep), CONSCIOUS (pressure thoughts, overload), SUBCONSCIOUS (nervous system baseline, stored patterns).
 
-If answers show healthy patterns, reflect that positively. Not everyone has a problem.
+If answers show healthy patterns reflect that positively. Not everyone has a problem.
 
 Person: ${name}
 Answers:
 ${summary}
 
-Respond with ONLY a raw JSON object. No intro text. No explanation. No markdown. Your entire response must start with { and end with }.
+CRITICAL INSTRUCTION: Your response must be a single valid JSON object and nothing else. Do not write any text before or after the JSON. Do not explain. Do not use markdown. Just return the JSON object.
 
-Required format:
+Use exactly this structure:
 {"pattern_name":"string","pattern_description":"string","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"string","drain_text":"string","steps":["string","string","string"]}`
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
-        },
-        {
-          role: 'assistant',
-          content: '{'
-        }
-      ]
+      messages: [{ role: 'user', content: prompt }]
     })
 
-    const raw = '{' + (message.content[0] as { text: string }).text
-    const clean = raw.replace(/```json|```/g, '').trim()
-    const result = JSON.parse(clean)
+    const raw = (message.content[0] as { text: string }).text
+    // Extract JSON even if there is surrounding text
+    const match = raw.match(/\{[\s\S]*\}/)
+    if (!match) throw new Error('No JSON found in response')
+    const result = JSON.parse(match[0])
 
     return NextResponse.json({ result }, { headers: CORS })
 
