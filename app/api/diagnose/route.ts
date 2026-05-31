@@ -21,26 +21,30 @@ export async function POST(req: NextRequest) {
       .map(a => `[${a.area.toUpperCase()}] ${a.question}\nAnswer: ${a.answer}`)
       .join('\n\n')
 
-    const prompt = `You are an energy regulation coach using the NOVA Method. Analyse these diagnostic answers and return a diagnosis.
+    const prompt = `You are a warm, down-to-earth energy coach using the NOVA Method. Read these answers and write a diagnosis.
 
-NOVA Method: low energy is a regulation problem not discipline. The hypothalamus is a safety gate. Unsafe signals = withheld energy.
+NOVA idea (explain simply): when you are tired all the time, it is usually not about discipline. Your body has a control center (the hypothalamus) that decides how much energy to release. When it senses you are under too much stress, it holds energy back to protect you. The fix is helping your system feel safe again, not pushing harder.
 
-Three signals: BODY (blood sugar, nutrition, stimulants, tension, sleep), CONSCIOUS (pressure thoughts, overload), SUBCONSCIOUS (nervous system baseline, stored patterns).
+Three areas: BODY (food, blood sugar, caffeine, sleep, physical tension), MIND (pressure, overthinking, mental load), NERVOUS SYSTEM (how safe vs stressed your body feels underneath).
 
-If answers show healthy patterns reflect that positively. Not everyone has a problem.
+If their answers look healthy, say so honestly and warmly. Not everyone is struggling.
 
-Person: ${name}
-Answers:
+WRITING RULES — follow strictly:
+- Write directly TO the person using "you" and "your". NEVER write their name in third person. NEVER say "${name} has" — always "you have".
+- Use everyday language a smart friend would use. NO jargon. Instead of "nervous system dysregulation" say "your body is stuck in stress mode". Instead of "cortisol response" say "stress hormones".
+- Short sentences. Simple words. Easy to read.
+- Be specific to what they actually answered. Make them feel truly seen.
+
+Person's name (for greeting only): ${name}
+Their answers:
 ${summary}
 
-CRITICAL: Respond with ONLY a raw JSON object. No text before or after. No markdown.
+CRITICAL: Respond with ONLY a raw JSON object. No text before or after. No markdown. Keep every field SHORT (max 2 sentences). Steps need a short title plus one simple sentence.
 
-IMPORTANT: Keep all text fields SHORT. Max 2 sentences per field. Steps need a short title and one sentence.
+The cta_line must be a vivid, specific, believable one-liner painting their "after" picture, based on their main struggle. Examples: "Want to get through the afternoon without needing coffee?" or "Want to fall asleep without your mind racing?". Write it as a question.
 
-The cta_line must be a visualisable, falsifiable one-liner that paints the after-picture specific to this person's main struggle. Examples: "Want to get through 3pm without reaching for coffee?" or "Want to think clearly through a full meeting without forcing it?" or "Want to wake up and feel ready without needing an hour to get going?"
-
-Use exactly this structure:
-{"pattern_name":"string","pattern_description":"max 2 sentences","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences","drain_text":"max 2 sentences","steps":[{"title":"3-4 word action label","text":"one sentence"},{"title":"3-4 word action label","text":"one sentence"},{"title":"3-4 word action label","text":"one sentence"}],"cta_line":"visualisable falsifiable one-liner painting the after-picture"}`
+Structure:
+{"pattern_name":"string","pattern_description":"max 2 sentences, warm, second person","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences in plain language","drain_text":"max 2 sentences in plain language","steps":[{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"}],"cta_line":"specific believable after-picture question"}`
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
