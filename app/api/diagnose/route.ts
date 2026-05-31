@@ -33,12 +33,14 @@ Person: ${name}
 Answers:
 ${summary}
 
-CRITICAL INSTRUCTION: Your response must be a single valid JSON object and nothing else. No text before or after. No markdown. Just the JSON.
+CRITICAL: Respond with ONLY a raw JSON object. No text before or after. No markdown.
 
-IMPORTANT FOR READABILITY: Keep each text field SHORT. Maximum 2 sentences per field. Steps must have a short title and one sentence of explanation.
+IMPORTANT: Keep all text fields SHORT. Max 2 sentences per field. Steps need a short title and one sentence.
+
+The cta_line must be a visualisable, falsifiable one-liner that paints the after-picture specific to this person's main struggle. Examples: "Want to get through 3pm without reaching for coffee?" or "Want to think clearly through a full meeting without forcing it?" or "Want to wake up and feel ready without needing an hour to get going?"
 
 Use exactly this structure:
-{"pattern_name":"string","pattern_description":"max 2 sentences, warm and specific","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences on what the three signal levels mean together","drain_text":"max 2 sentences on what is draining them or working in their favour","steps":[{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"},{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"},{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"}]}`
+{"pattern_name":"string","pattern_description":"max 2 sentences","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences","drain_text":"max 2 sentences","steps":[{"title":"3-4 word action label","text":"one sentence"},{"title":"3-4 word action label","text":"one sentence"},{"title":"3-4 word action label","text":"one sentence"}],"cta_line":"visualisable falsifiable one-liner painting the after-picture"}`
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
