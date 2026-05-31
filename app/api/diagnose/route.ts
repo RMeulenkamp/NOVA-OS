@@ -33,10 +33,12 @@ Person: ${name}
 Answers:
 ${summary}
 
-CRITICAL INSTRUCTION: Your response must be a single valid JSON object and nothing else. Do not write any text before or after the JSON. Do not explain. Do not use markdown. Just return the JSON object.
+CRITICAL INSTRUCTION: Your response must be a single valid JSON object and nothing else. No text before or after. No markdown. Just the JSON.
+
+IMPORTANT FOR READABILITY: Keep each text field SHORT. Maximum 2 sentences per field. Steps must have a short title and one sentence of explanation.
 
 Use exactly this structure:
-{"pattern_name":"string","pattern_description":"string","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"string","drain_text":"string","steps":["string","string","string"]}`
+{"pattern_name":"string","pattern_description":"max 2 sentences, warm and specific","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences on what the three signal levels mean together","drain_text":"max 2 sentences on what is draining them or working in their favour","steps":[{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"},{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"},{"title":"3-4 word bold action label","text":"one sentence explanation of how and why"}]}`
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
@@ -45,7 +47,6 @@ Use exactly this structure:
     })
 
     const raw = (message.content[0] as { text: string }).text
-    // Extract JSON even if there is surrounding text
     const match = raw.match(/\{[\s\S]*\}/)
     if (!match) throw new Error('No JSON found in response')
     const result = JSON.parse(match[0])
