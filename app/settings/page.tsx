@@ -201,8 +201,9 @@ export default function SettingsPage() {
         <Card>
           <p className="nova-label">Your data</p>
           <p className="text-xs text-nova-muted mb-4 leading-relaxed">
-            All data is stored locally on your device. Nothing is sent to external servers except
-            AI requests (which are not stored by Anthropic).
+            Your check-ins, patterns, and profile are stored on your device and securely synced
+            to NOVA's database so your data is safe if you switch devices. AI requests are
+            processed by Anthropic and not stored.
           </p>
           <div className="space-y-2">
             <Button variant="secondary" className="w-full" onClick={handleLogout}>
