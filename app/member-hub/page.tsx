@@ -1,9 +1,9 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
+import { getSupabase } from '@/lib/supabase'
 import { TopBar, BottomNav } from '@/components/Navigation'
 import { Card } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
 import {
   Lock,
   Star,
@@ -14,9 +14,26 @@ import {
   ChevronDown,
   ChevronRight,
   Phone,
+  Play,
+  Video,
+  ExternalLink,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
+
+interface ProgramResource {
+  week: number
+  module_title: string | null
+  module_video_url: string | null
+  course_platform_url: string | null
+  call_title: string | null
+  call_recording_url: string | null
+}
+
+function extractVimeoId(url: string): string | null {
+  const match = url.match(/vimeo\.com\/(\d+)/)
+  return match ? match[1] : null
+}
 
 // ─── Week content ─────────────────────────────────────────────────────────────
 
@@ -125,6 +142,29 @@ const WEEKS = [
     ],
     supplement: 'Maintenance: Multivitamin 2 tabs morning/midday/evening + MSM 4 tabs morning & evening + Antioxidants 2 tabs morning + Omega-3 morning & evening',
     expect: 'This is lifelong learning. You now know how your metabolism works. Use that knowledge.',
+  },
+]
+
+// ─── Packages ─────────────────────────────────────────────────────────────────
+
+const PACKAGES = [
+  {
+    name: 'Budget Package',
+    image: '/package-budget.png',
+    includes: ['Daily BioBasics', 'Triple Protein (or Vegan)', 'MSM Plus', 'Proanthenols 100'],
+    optional: 'Enerxan (optional for weight loss)',
+  },
+  {
+    name: 'Standard Package',
+    image: null,
+    includes: ['Daily BioBasics', 'Triple Protein (or Vegan)', 'Proanthenols 100', 'MSM Plus', 'OmeGold (or Vegan)', 'X-Cell'],
+    optional: 'Enerxan (optional for weight loss)',
+  },
+  {
+    name: 'Full Package',
+    image: '/package-full.png',
+    includes: ['Daily BioBasics', 'Triple Protein (or Vegan)', 'Proanthenols 100', 'MSM Plus', 'OmeGold (or Vegan)', 'X-Cell', '+ additional support products'],
+    optional: 'Enerxan (optional for weight loss)',
   },
 ]
 
@@ -240,8 +280,9 @@ function LockedHub() {
 
 // ─── Week accordion item ──────────────────────────────────────────────────────
 
-function WeekItem({ data, isCurrentWeek }: { data: typeof WEEKS[0]; isCurrentWeek: boolean }) {
+function WeekItem({ data, isCurrentWeek, resource }: { data: typeof WEEKS[0]; isCurrentWeek: boolean; resource?: ProgramResource }) {
   const [open, setOpen] = useState(isCurrentWeek)
+  const [activeVideo, setActiveVideo] = useState<'module' | 'call' | null>(null)
 
   return (
     <div className={cn(
@@ -305,6 +346,95 @@ function WeekItem({ data, isCurrentWeek }: { data: typeof WEEKS[0]; isCurrentWee
             <p className="text-xs font-medium text-nova-accent mb-1">What to expect</p>
             <p className="text-xs text-nova-muted leading-relaxed">{data.expect}</p>
           </div>
+
+          {/* Resources */}
+          <div className="space-y-2">
+            <p className="text-xs text-nova-dim uppercase tracking-wider">Resources</p>
+
+            {/* Module intro video */}
+            {resource?.module_video_url ? (
+              <div className="rounded-xl overflow-hidden border border-nova-border bg-nova-surface">
+                <div className="px-3 py-2 flex items-center justify-between border-b border-nova-border">
+                  <div className="flex items-center gap-2">
+                    <Play className="w-3.5 h-3.5 text-nova-accent" />
+                    <span className="text-xs font-medium text-nova-text-bright">
+                      {resource.module_title ?? `Week ${data.week} — Module Intro`}
+                    </span>
+                  </div>
+                  {resource.course_platform_url && (
+                    <a
+                      href={resource.course_platform_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-[10px] text-nova-accent hover:underline"
+                    >
+                      Full course <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                </div>
+                {activeVideo === 'module' ? (
+                  <div className="aspect-video">
+                    <iframe
+                      src={`https://player.vimeo.com/video/${extractVimeoId(resource.module_video_url)}?autoplay=1&title=0&byline=0&portrait=0`}
+                      className="w-full h-full"
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setActiveVideo('module')}
+                    className="w-full aspect-video bg-nova-bg flex items-center justify-center hover:bg-nova-surface/50 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-nova-accent/20 border border-nova-accent/40 flex items-center justify-center">
+                      <Play className="w-5 h-5 text-nova-accent ml-0.5" />
+                    </div>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-nova-border p-4 flex items-center gap-3 opacity-50">
+                <Play className="w-4 h-4 text-nova-dim" />
+                <p className="text-xs text-nova-dim">Module intro video — coming soon</p>
+              </div>
+            )}
+
+            {/* Call recording */}
+            {resource?.call_recording_url ? (
+              <div className="rounded-xl overflow-hidden border border-nova-border bg-nova-surface">
+                <div className="px-3 py-2 flex items-center gap-2 border-b border-nova-border">
+                  <Video className="w-3.5 h-3.5 text-nova-teal" />
+                  <span className="text-xs font-medium text-nova-text-bright">
+                    {resource.call_title ?? `Week ${data.week} — Call Recording`}
+                  </span>
+                </div>
+                {activeVideo === 'call' ? (
+                  <div className="aspect-video">
+                    <iframe
+                      src={`https://player.vimeo.com/video/${extractVimeoId(resource.call_recording_url)}?autoplay=1&title=0&byline=0&portrait=0`}
+                      className="w-full h-full"
+                      allow="autoplay; fullscreen"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setActiveVideo('call')}
+                    className="w-full aspect-video bg-nova-bg flex items-center justify-center hover:bg-nova-surface/50 transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-nova-teal/20 border border-nova-teal/40 flex items-center justify-center">
+                      <Play className="w-5 h-5 text-nova-teal ml-0.5" />
+                    </div>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-nova-border p-4 flex items-center gap-3 opacity-50">
+                <Video className="w-4 h-4 text-nova-dim" />
+                <p className="text-xs text-nova-dim">Call recording — uploaded after the live call</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -316,9 +446,23 @@ function WeekItem({ data, isCurrentWeek }: { data: typeof WEEKS[0]; isCurrentWee
 export default function MemberHubPage() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState<'program' | 'supplements'>('program')
+  const [resources, setResources] = useState<Record<number, ProgramResource>>({})
 
   const inProgram = user?.inProgram
   const programWeek = user?.programWeek ?? 1
+
+  useEffect(() => {
+    const sb = getSupabase()
+    if (!sb || !inProgram) return
+    sb.from('program_resources')
+      .select('*')
+      .then(({ data }) => {
+        if (!data) return
+        const map: Record<number, ProgramResource> = {}
+        data.forEach((r: ProgramResource) => { map[r.week] = r })
+        setResources(map)
+      })
+  }, [inProgram])
 
   if (!inProgram) {
     return (
@@ -383,6 +527,7 @@ export default function MemberHubPage() {
                 key={week.week}
                 data={week}
                 isCurrentWeek={week.week === programWeek}
+                resource={resources[week.week]}
               />
             ))}
           </div>
@@ -390,10 +535,43 @@ export default function MemberHubPage() {
 
         {/* Supplements tab */}
         {activeTab === 'supplements' && (
-          <div className="px-4 pt-4 pb-4 space-y-3">
+          <div className="px-4 pt-4 pb-4 space-y-4">
             <p className="text-xs text-nova-dim leading-relaxed px-1">
               Lifeplus supplements are cold-processed to preserve enzyme and vitamin potency. Consistency matters more than perfection.
             </p>
+
+            {/* Your package */}
+            <div>
+              <p className="text-xs text-nova-dim uppercase tracking-wider mb-2 px-1">Your package</p>
+              <div className="space-y-3">
+                {PACKAGES.map((pkg) => (
+                  <Card key={pkg.name} className="space-y-3">
+                    <p className="text-sm font-semibold text-nova-text-bright">{pkg.name}</p>
+                    {pkg.image && (
+                      <img
+                        src={pkg.image}
+                        alt={pkg.name}
+                        className="w-full rounded-lg object-contain max-h-40 bg-white"
+                      />
+                    )}
+                    <div className="space-y-1">
+                      {pkg.includes.map((item) => (
+                        <div key={item} className="flex items-center gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-nova-accent flex-shrink-0" />
+                          <p className="text-xs text-nova-muted">{item}</p>
+                        </div>
+                      ))}
+                      <div className="flex items-center gap-2 opacity-60">
+                        <div className="w-1.5 h-1.5 rounded-full bg-nova-dim flex-shrink-0" />
+                        <p className="text-xs text-nova-dim italic">{pkg.optional}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs text-nova-dim uppercase tracking-wider px-1 pt-2">Supplement guide</p>
             {SUPPLEMENTS.map((supp) => (
               <Card key={supp.name} className="space-y-2">
                 <div className="flex items-start justify-between gap-2">

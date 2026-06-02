@@ -12,7 +12,7 @@ import { TopBar, BottomNav, NovaLogo } from '@/components/Navigation'
 import { Card } from '@/components/ui/Card'
 import { cn, getStateLabelColor, getStateLabelBg, getProtocolColor, formatRelative } from '@/lib/utils'
 import type { DailyCheckIn } from '@/lib/types'
-import { ScanLine, Zap, MessageSquare, ChevronRight, Flame, TrendingUp, Bell, X } from 'lucide-react'
+import { ScanLine, Zap, MessageSquare, ChevronRight, Flame, TrendingUp, Bell, X, Clock } from 'lucide-react'
 import { ConversionNudge } from '@/components/ConversionNudge'
 
 export default function DashboardPage() {
@@ -278,6 +278,22 @@ export default function DashboardPage() {
             </p>
           </Card>
         )}
+
+        {/* History & Insights button */}
+        <Link href="/history">
+          <Card className="border-nova-border hover:border-nova-accent/30 transition-all cursor-pointer">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-nova-surface border border-nova-border flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-nova-muted" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-nova-text-bright">History & Insights</p>
+                <p className="text-xs text-nova-dim mt-0.5">Your patterns over time</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-nova-dim" />
+            </div>
+          </Card>
+        </Link>
       </div>
 
       <BottomNav />
