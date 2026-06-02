@@ -15,20 +15,29 @@ export default function WelcomePage() {
   const { login } = useAuth()
   const router = useRouter()
 
-  function handleSignup(e: React.FormEvent) {
+  async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim() || !email.trim()) return
     setIsLoading(true)
 
-    setTimeout(() => {
-      const user = createUser({
-        name: name.trim(),
-        email: email.trim(),
-        onboardingCompleted: false,
-      })
-      login(user)
-      router.push('/onboarding')
-    }, 600)
+    const nameParts = name.trim().split(' ')
+    const firstName = nameParts[0]
+    const lastName = nameParts.slice(1).join(' ')
+
+    // Add to Systeme CRM silently — never blocks signup
+    fetch('/api/crm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), firstName, lastName }),
+    }).catch(() => {})
+
+    const user = createUser({
+      name: name.trim(),
+      email: email.trim(),
+      onboardingCompleted: false,
+    })
+    login(user)
+    router.push('/onboarding')
   }
 
   if (mode === 'signup') {
@@ -48,7 +57,7 @@ export default function WelcomePage() {
               Create your account
             </h2>
             <p className="text-nova-muted text-sm mt-2">
-              Your data stays private, stored locally on your device.
+              Your data is stored securely and synced to your account.
             </p>
           </div>
 
