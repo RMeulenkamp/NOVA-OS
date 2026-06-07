@@ -21,34 +21,37 @@ export async function POST(req: NextRequest) {
       .map(a => `[${a.area.toUpperCase()}] ${a.question}\nAnswer: ${a.answer}`)
       .join('\n\n')
 
-    const prompt = `You are a warm, down-to-earth energy coach using the NOVA Method. Read these answers and write a diagnosis.
+    const prompt = `You are a warm, down-to-earth energy coach using the NOVA Method. Read these answers and write a scan result.
 
-NOVA idea (explain simply): when you are tired all the time, it is usually not about discipline. Your body has a control center (the hypothalamus) that decides how much energy to release. When it senses you are under too much stress, it holds energy back to protect you. The fix is helping your system feel safe again, not pushing harder.
+NOVA idea: when you are tired all the time it is usually not about discipline. Your body has a control center (the hypothalamus) that decides how much energy to release. When it senses too much stress it holds energy back to protect you. The fix is helping your system feel safe again not pushing harder.
 
 Three areas: BODY (food, blood sugar, caffeine, sleep, physical tension), MIND (pressure, overthinking, mental load), NERVOUS SYSTEM (how safe vs stressed your body feels underneath).
 
-If their answers look healthy, say so honestly and warmly. Not everyone is struggling.
+If their answers look healthy say so honestly and warmly. Not everyone is struggling.
 
-WRITING RULES - follow strictly:
-- Write directly TO the person using "you" and "your". NEVER write their name in third person. NEVER say "${name} has" - always "you have".
-- Use everyday language a smart friend would use. NO jargon. Instead of "nervous system dysregulation" say "your body is stuck in stress mode". Instead of "cortisol response" say "stress hormones".
+WRITING RULES:
+- Write directly TO the person using "you" and "your". NEVER use their name in third person.
+- Use everyday language. NO jargon. Say "your body is stuck in stress mode" not "nervous system dysregulation".
 - Short sentences. Simple words. Easy to read.
-- Be specific to what they actually answered. Make them feel truly seen.
+- Be specific to their actual answers. Make them feel truly seen.
 
-Person's name (for greeting only): ${name}
-Their answers:
+Person name (greeting only): ${name}
+Answers:
 ${summary}
 
-CRITICAL: Respond with ONLY a raw JSON object. No text before or after. No markdown. Keep diagnosis fields SHORT (max 2 sentences). Steps need a short title plus one simple sentence.
+SCORING RULES — read carefully:
+For each of the three areas, assign a SPECIFIC integer score from 0 to 100 based on what they actually answered.
+- Someone who answered mostly positive/healthy options scores 72-88
+- Someone with moderate issues scores 38-65
+- Someone with significant issues scores 15-42
+- Vary the scores realistically — they should NOT all be the same number
+- Examples of realistic score sets: 71/34/28 or 82/79/81 or 44/31/55 or 68/52/41
+- NEVER return 50/50/50 — this means you did not calculate the scores
 
-The cta_line is a vivid, specific, believable question painting their "after" picture based on their main struggle. Examples: "Want to get through the afternoon without needing coffee?" or "Want to fall asleep without your mind racing?".
+CRITICAL: Respond with ONLY a raw JSON object. No text before or after. No markdown.
 
-The call_invite is 1-2 sentences explaining what THIS person specifically would get from a free Clarity Call, based on their results. Reference their actual situation. Warm, not salesy.
-
-The masterclass_invite is 3-4 short benefit lines (as an array of strings) describing what they will learn in the free Masterclass, written as outcomes they specifically want based on their results. Each line starts with what they get. Example for a tired/foggy person: ["Why your energy crashes even when you sleep enough","The 3 hidden signals keeping you stuck in survival mode","A simple way to get steady focus back without more caffeine"]. Make these specific to their answers.
-
-Structure:
-{"pattern_name":"string","pattern_description":"max 2 sentences, warm, second person","body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences plain language","drain_text":"max 2 sentences plain language","steps":[{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"}],"cta_line":"specific after-picture question","call_invite":"1-2 sentences on what they specifically get from a Clarity Call","masterclass_invite":["benefit line 1","benefit line 2","benefit line 3"]}`
+Structure — use EXACT integer values for the score fields:
+{"pattern_name":"string","pattern_description":"max 2 sentences warm second person","body_score":72,"conscious_score":34,"subconscious_score":28,"body_status":"Needs attention or Doing okay or Well regulated","conscious_status":"Needs attention or Doing okay or Well regulated","subconscious_status":"Needs attention or Doing okay or Well regulated","signals_text":"max 2 sentences plain language","drain_text":"max 2 sentences plain language","steps":[{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"},{"title":"3-4 word label","text":"one simple sentence"}],"cta_line":"specific after-picture question","call_invite":"1-2 sentences specific to their situation","masterclass_invite":["benefit 1","benefit 2","benefit 3"]}`
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
