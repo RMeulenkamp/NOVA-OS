@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import {
   getTodayCheckIn, getCheckIns, getCheckInStreak, getWeeklyCheckInCount, getRecentPattern,
+  pullCheckInsFromSupabase,
 } from '@/lib/storage'
 import { getTodayReminderMessage, requestNotificationPermission, getReminderEnabled, setReminderEnabled } from '@/lib/reminders'
 import { TopBar, BottomNav, NovaLogo } from '@/components/Navigation'
@@ -31,17 +32,21 @@ export default function DashboardPage() {
     if (isLoading) return
     if (!user) { router.replace('/welcome'); return }
 
-    const checkIn = getTodayCheckIn()
-    setTodayCheckIn(checkIn || null)
-    setStreak(getCheckInStreak())
-    setWeeklyCount(getWeeklyCheckInCount())
-    setRecentPattern(getRecentPattern())
-    setRecentCheckIns(getCheckIns().slice(0, 5))
-
-    // Show reminder banner if no check-in today
-    if (!checkIn) {
-      setShowReminder(true)
+    function refreshFromLocal() {
+      const checkIn = getTodayCheckIn()
+      setTodayCheckIn(checkIn || null)
+      setStreak(getCheckInStreak())
+      setWeeklyCount(getWeeklyCheckInCount())
+      setRecentPattern(getRecentPattern())
+      setRecentCheckIns(getCheckIns().slice(0, 5))
+      if (!checkIn) setShowReminder(true)
     }
+
+    // Show local data immediately
+    refreshFromLocal()
+
+    // Then pull any check-ins made on other devices and refresh
+    pullCheckInsFromSupabase(user.id).then(refreshFromLocal)
   }, [user, isLoading, router])
 
   async function handleEnableNotifications() {

@@ -524,6 +524,7 @@ export function getToneModifier(tone?: PreferredTone): string {
 
 export function buildScannerPrompt(checkIn: DailyCheckIn, user?: NovaUser | null): string {
   const toneNote = getToneModifier(user?.preferredTone)
+  const noCaffeine = user?.caffeineLevel === 'none'
 
   return `Analyze this daily state check-in using the NOVA Method framework.
 Apply the pattern library precisely. Use NOVA language throughout.
@@ -543,6 +544,7 @@ Check-in data:
 - User's note: "${checkIn.freeText || 'none'}"
 ${user?.mainStruggle ? `- Known struggle: ${user.mainStruggle.replace(/_/g, ' ')}` : ''}
 ${user?.primaryGoal ? `- Goal: ${user.primaryGoal.replace(/_/g, ' ')}` : ''}
+${noCaffeine ? `\nIMPORTANT: This user does not drink coffee or caffeine at all. NEVER suggest coffee, caffeine, or "have your coffee" as an action or reframe. If discussing the "caffeine desire" score, treat it as a general stimulation/urge signal, not literal coffee. Suggest non-caffeine alternatives instead (protein, movement, cold water, light exposure).` : ''}
 
 Cross-reference the Thrive Triangle: which lever is most dysregulated today?
 Apply the NOVA pattern library to name the state precisely.
@@ -586,6 +588,7 @@ export function buildEmergencyPrompt(
   const toneNote = getToneModifier(user?.preferredTone)
   const label = emergencyLabels[eventType]
   const highIntensity = intensity >= 8
+  const noCaffeine = user?.caffeineLevel === 'none'
 
   return `The user is in a real-time moment of: ${label}
 Intensity: ${intensity}/10${highIntensity ? ' — this is high. Lead with real acknowledgment.' : ''}
@@ -595,6 +598,7 @@ Use the NOVA Method emergency framework. Apply the correct pattern from the NOVA
 This person needs real support in this exact moment — not generic advice.
 
 Tone: ${toneNote}
+${noCaffeine ? `\nIMPORTANT: This user does not drink coffee or caffeine at all. NEVER suggest coffee or caffeine as a reset step, even if the event type relates to caffeine urges. Offer non-caffeine alternatives instead.` : ''}
 
 Return a JSON object with EXACTLY these fields:
 {
@@ -632,11 +636,16 @@ Do NOT suggest programs or masterclasses — they are already in the reset. Focu
     programContext = `\nThis user has completed the full 7-week Abundant Energy Reset. They have the foundation. If patterns are returning, gentle exploration of which lever needs attention is appropriate. 1-on-1 coaching (Clarity Call) may be relevant.`
   }
 
+  const caffeineNote = user?.caffeineLevel === 'none'
+    ? `\nIMPORTANT: This user does not drink coffee or caffeine at all. NEVER suggest coffee or caffeine as a solution, tool, or comparison. Offer non-caffeine alternatives instead.`
+    : ''
+
   return `${NOVA_MASTER_IDENTITY}
 
 You are operating as the Pattern Interrupt Coach — conversational, real-time support.
 ${toneNote}
 ${programContext}
+${caffeineNote}
 ${recentCheckIn?.aiStateLabel ? `Context: The user's most recent state scan showed "${recentCheckIn.aiStateLabel}". Keep this in mind.` : ''}
 ${user?.mainStruggle ? `Known struggle: ${user.mainStruggle.replace(/_/g, ' ')}` : ''}
 ${user?.primaryGoal ? `Goal: ${user.primaryGoal.replace(/_/g, ' ')}` : ''}

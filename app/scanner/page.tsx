@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
-import { saveCheckIn, generateId, getTodayCheckIn } from '@/lib/storage'
+import { saveCheckIn, generateId, getTodayCheckIn, pullCheckInsFromSupabase } from '@/lib/storage'
 import { cn } from '@/lib/utils'
 import { TopBar, BottomNav } from '@/components/Navigation'
 import { ScoreSlider, OptionSelector } from '@/components/ui/ScoreSlider'
@@ -32,6 +32,18 @@ export default function ScannerPage() {
     todayCheckIn?.aiRecommendations || null
   )
   const [checkInData, setCheckInData] = useState<DailyCheckIn | null>(todayCheckIn || null)
+
+  // Pull any check-ins from other devices so "already scanned today" is accurate
+  useEffect(() => {
+    if (!user) return
+    pullCheckInsFromSupabase(user.id).then(() => {
+      const synced = getTodayCheckIn()
+      if (synced?.aiRecommendations) {
+        setCheckInData(synced)
+        setResult(synced.aiRecommendations)
+      }
+    })
+  }, [user])
 
   // Form state
   const [sleepQuality, setSleepQuality] = useState(6)

@@ -103,83 +103,40 @@ export default function SettingsPage() {
           </div>
         </Card>
 
-        {/* NOVA Program status */}
+        {/* NOVA Program status — read only, set by NOVA team */}
         <Card>
           <p className="nova-label">NOVA Program journey</p>
-          <p className="text-xs text-nova-muted mb-4 leading-relaxed">
-            Tell NOVA where you are in the program so it can personalise its support and suggestions.
-          </p>
           <div className="space-y-3">
-
-            {/* Masterclass */}
-            <button
-              onClick={() => updateUser({ masterclassCompleted: !user.masterclassCompleted })}
-              className="w-full flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl border border-nova-border/50 hover:border-nova-accent/40 transition-colors text-left"
-            >
+            <div className="flex items-center justify-between py-2">
               <div>
-                <p className="text-sm font-medium text-nova-text-bright">Attended the free Masterclass</p>
+                <p className="text-sm font-medium text-nova-text-bright">Masterclass</p>
                 <p className="text-xs text-nova-dim mt-0.5">Abundant Energy Masterclass</p>
               </div>
               {user.masterclassCompleted
                 ? <CheckCircle className="w-5 h-5 text-nova-success flex-shrink-0" />
                 : <Circle className="w-5 h-5 text-nova-dim flex-shrink-0" />}
-            </button>
-
-            {/* Currently in program */}
-            <button
-              onClick={() => updateUser({
-                inProgram: !user.inProgram,
-                // Auto-clear week if toggling off
-                programWeek: !user.inProgram ? (user.programWeek || 1) : undefined,
-              })}
-              className="w-full flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl border border-nova-border/50 hover:border-nova-accent/40 transition-colors text-left"
-            >
+            </div>
+            <div className="flex items-center justify-between py-2 border-t border-nova-border/50">
               <div>
-                <p className="text-sm font-medium text-nova-text-bright">Currently in the Energy Reset</p>
-                <p className="text-xs text-nova-dim mt-0.5">7-week Abundant Energy Reset program</p>
+                <p className="text-sm font-medium text-nova-text-bright">Energy Reset program</p>
+                <p className="text-xs text-nova-dim mt-0.5">
+                  {user.inProgram ? `Active — week ${user.programWeek ?? 1} of 7` : 'Not enrolled'}
+                </p>
               </div>
               {user.inProgram
                 ? <CheckCircle className="w-5 h-5 text-nova-accent flex-shrink-0" />
                 : <Circle className="w-5 h-5 text-nova-dim flex-shrink-0" />}
-            </button>
-
-            {/* Program week selector (only when in program) */}
-            {user.inProgram && (
-              <div className="pl-3 pt-1">
-                <p className="text-xs text-nova-muted mb-2">Which week are you on?</p>
-                <div className="flex gap-2 flex-wrap">
-                  {[1, 2, 3, 4, 5, 6, 7].map(week => (
-                    <button
-                      key={week}
-                      onClick={() => updateUser({ programWeek: week })}
-                      className={cn(
-                        'w-9 h-9 rounded-lg text-sm font-semibold transition-all',
-                        user.programWeek === week
-                          ? 'bg-nova-accent text-white'
-                          : 'bg-nova-surface border border-nova-border text-nova-muted hover:border-nova-accent/40'
-                      )}
-                    >
-                      {week}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            </div>
+            {!user.inProgram && (
+              <a
+                href="https://www.nova-method.com/clarity-call"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full text-center text-xs text-nova-accent hover:underline pt-1"
+              >
+                Join the program → Schedule a Clarity Call
+              </a>
             )}
-
-            {/* Completed the program */}
-            <button
-              onClick={() => updateUser({ energyResetCompleted: !user.energyResetCompleted })}
-              className="w-full flex items-center justify-between gap-3 py-2.5 px-3 rounded-xl border border-nova-border/50 hover:border-nova-accent/40 transition-colors text-left"
-            >
-              <div>
-                <p className="text-sm font-medium text-nova-text-bright">Completed the Energy Reset</p>
-                <p className="text-xs text-nova-dim mt-0.5">Finished the full 7-week program</p>
-              </div>
-              {user.energyResetCompleted
-                ? <CheckCircle className="w-5 h-5 text-nova-success flex-shrink-0" />
-                : <Circle className="w-5 h-5 text-nova-dim flex-shrink-0" />}
-            </button>
-
           </div>
         </Card>
 

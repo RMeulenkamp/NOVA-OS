@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { getUser, saveUser, clearUser } from './storage'
+import { getSupabase } from './supabase'
 import type { NovaUser } from './types'
 
 interface AuthContextValue {
@@ -20,7 +21,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const stored = getUser()
+    if (!stored) {
+      setIsLoading(false)
+      return
+    }
+
+    // Always load from localStorage first so the UI is instant
     setUser(stored)
+
+    // Then silently fetch controlled fields from Supabase
+    // These are fields only YOU can set: inProgram, programWeek, isPro, energyResetCompleted
+    const sb = getSupabase()
+    if (sb) {
+      sb.from('users')
+        .select('in_program, program_week, is_pro, energy_reset_completed, masterclass_completed')
+        .eq('id', stored.id)
+        .single()
+        .then(({ data }) => {
+          if (!data) return
+          const updated: NovaUser = {
+            ...stored,
+            inProgram: data.in_program ?? stored.inProgram,
+            programWeek: data.program_week ?? stored.programWeek,
+            isPro: data.is_pro ?? stored.isPro,
+            energyResetCompleted: data.energy_reset_completed ?? stored.energyResetCompleted,
+            masterclassCompleted: data.masterclass_completed ?? stored.masterclassCompleted,
+          }
+          saveUser(updated)
+          setUser(updated)
+        })
+        .catch(() => {})
+    }
+
     setIsLoading(false)
   }, [])
 

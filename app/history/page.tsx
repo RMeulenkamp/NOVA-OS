@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { getCheckIns, getEmergencyEvents } from '@/lib/storage'
+import { getCheckIns, getEmergencyEvents, pullCheckInsFromSupabase, pullEmergencyEventsFromSupabase } from '@/lib/storage'
 import { getAverages, filterByDays, cn, getStateLabelColor, getScoreColor, formatDate, formatTime } from '@/lib/utils'
 import { TopBar, BottomNav } from '@/components/Navigation'
 import { Card } from '@/components/ui/Card'
@@ -40,10 +40,18 @@ export default function HistoryPage() {
   const [loadingReading, setLoadingReading] = useState(false)
 
   useEffect(() => {
-    if (user) {
+    if (!user) return
+
+    setCheckIns(getCheckIns().filter(c => c.userId === user.id))
+    setEmergencyEvents(getEmergencyEvents().filter(e => e.userId === user.id))
+
+    Promise.all([
+      pullCheckInsFromSupabase(user.id),
+      pullEmergencyEventsFromSupabase(user.id),
+    ]).then(() => {
       setCheckIns(getCheckIns().filter(c => c.userId === user.id))
       setEmergencyEvents(getEmergencyEvents().filter(e => e.userId === user.id))
-    }
+    })
   }, [user])
 
   // Reset reading when period changes

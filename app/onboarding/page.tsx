@@ -41,7 +41,7 @@ const toneOptions: { value: PreferredTone; label: string; desc: string }[] = [
 ]
 
 const caffeineOptions: { value: CaffeineLevel; label: string }[] = [
-  { value: 'none', label: 'None' },
+  { value: 'none', label: "I don't drink coffee / caffeine at all" },
   { value: 'low', label: 'Low (1 cup/day)' },
   { value: 'moderate', label: 'Moderate (2-3 cups)' },
   { value: 'high', label: 'High (4+ cups)' },
@@ -52,11 +52,11 @@ export default function OnboardingPage() {
   const router = useRouter()
 
   const [step, setStep] = useState(1)
-  const [goal, setGoal] = useState<PrimaryGoal>('stable_energy')
-  const [struggle, setStruggle] = useState<MainStruggle>('afternoon_crashes')
-  const [tone, setTone] = useState<PreferredTone>('direct')
-  const [caffeine, setCaffeine] = useState<CaffeineLevel>('moderate')
-  const [desiredFeeling, setDesiredFeeling] = useState('')
+  const [goal, setGoal] = useState<PrimaryGoal>(user?.primaryGoal ?? 'stable_energy')
+  const [struggle, setStruggle] = useState<MainStruggle>(user?.mainStruggle ?? 'afternoon_crashes')
+  const [tone, setTone] = useState<PreferredTone>(user?.preferredTone ?? 'direct')
+  const [caffeine, setCaffeine] = useState<CaffeineLevel>(user?.caffeineLevel ?? 'moderate')
+  const [desiredFeeling, setDesiredFeeling] = useState(user?.desiredFeeling ?? '')
 
   function handleNext() {
     if (step < TOTAL_STEPS) {

@@ -9,6 +9,7 @@ import type {
   UserInsight,
 } from './types'
 import { syncUser, syncCheckIn, syncEmergencyEvent } from './sync'
+import { getSupabase } from './supabase'
 
 // ─── Keys ─────────────────────────────────────────────────────────────────────
 
@@ -103,6 +104,86 @@ export function saveCheckIn(checkIn: DailyCheckIn): void {
   }
   set(KEYS.CHECK_INS, all)
   syncCheckIn(checkIn) // background sync to Supabase
+}
+
+// ─── Cross-device sync (pull from Supabase) ──────────────────────────────────
+// Local check-ins are saved instantly for speed. But if someone logs in on a
+// second device (phone + computer), we need to pull their history down too.
+
+export async function pullCheckInsFromSupabase(userId: string): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+
+  const { data, error } = await sb
+    .from('daily_check_ins')
+    .select('*')
+    .eq('user_id', userId)
+
+  if (error || !data) return
+
+  const local = get<DailyCheckIn>(KEYS.CHECK_INS)
+  const merged = [...local]
+
+  data.forEach((row: Record<string, unknown>) => {
+    const checkIn: DailyCheckIn = {
+      id: row.id as string,
+      userId: row.user_id as string,
+      date: row.date as string,
+      sleepQuality: row.sleep_quality as number,
+      morningEnergy: row.morning_energy as number,
+      mentalClarity: row.mental_clarity as number,
+      stressPressure: row.stress_pressure as number,
+      bodyTension: row.body_tension as number,
+      cravings: row.cravings as DailyCheckIn['cravings'],
+      emotionalState: row.emotional_state as DailyCheckIn['emotionalState'],
+      focusCapacity: row.focus_capacity as DailyCheckIn['focusCapacity'],
+      caffeineDesire: row.caffeine_desire as DailyCheckIn['caffeineDesire'],
+      freeText: (row.free_text as string) ?? '',
+      aiStateLabel: (row.ai_state_label as DailyCheckIn['aiStateLabel']) ?? undefined,
+      aiSummary: (row.ai_summary as string) ?? undefined,
+      aiRecommendations: (row.ai_recommendations as DailyCheckIn['aiRecommendations']) ?? undefined,
+      createdAt: row.created_at as string,
+    }
+    const idx = merged.findIndex((c) => c.id === checkIn.id)
+    if (idx >= 0) merged[idx] = checkIn
+    else merged.push(checkIn)
+  })
+
+  set(KEYS.CHECK_INS, merged)
+}
+
+export async function pullEmergencyEventsFromSupabase(userId: string): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+
+  const { data, error } = await sb
+    .from('emergency_events')
+    .select('*')
+    .eq('user_id', userId)
+
+  if (error || !data) return
+
+  const local = get<EmergencyEvent>(KEYS.EMERGENCY_EVENTS)
+  const merged = [...local]
+
+  data.forEach((row: Record<string, unknown>) => {
+    const event: EmergencyEvent = {
+      id: row.id as string,
+      userId: row.user_id as string,
+      date: row.date as string,
+      eventType: row.event_type as EmergencyEvent['eventType'],
+      intensity: row.intensity as number,
+      triggerText: (row.trigger_text as string) ?? undefined,
+      aiPattern: (row.ai_pattern as string) ?? undefined,
+      aiResponse: (row.ai_response as EmergencyEvent['aiResponse']) ?? undefined,
+      createdAt: row.created_at as string,
+    }
+    const idx = merged.findIndex((e) => e.id === event.id)
+    if (idx >= 0) merged[idx] = event
+    else merged.push(event)
+  })
+
+  set(KEYS.EMERGENCY_EVENTS, merged)
 }
 
 // ─── Emergency Events ─────────────────────────────────────────────────────────
