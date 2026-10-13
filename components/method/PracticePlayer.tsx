@@ -44,20 +44,31 @@ export function PracticePlayer({ slug, onDone }: PracticePlayerProps) {
       </div>
 
       {audioUrl ? (
-        <audio controls preload="none" src={audioUrl} className="w-full h-10" />
-      ) : (
-        <div className="rounded-lg border border-dashed border-nova-border px-3 py-2.5 flex items-center justify-between gap-3">
-          <p className="text-xs text-nova-dim">Audio is not added yet. Do this one from your course.</p>
+        <>
+          <audio controls preload="none" src={audioUrl} className="w-full h-10" />
           {courseUrl && (
             <a
               href={courseUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-nova-accent hover:underline flex-shrink-0"
+              className="inline-flex items-center gap-1 text-xs text-nova-accent hover:underline"
             >
-              Open <ExternalLink className="w-3 h-3" />
+              Open the full lesson in your course <ExternalLink className="w-3 h-3" />
             </a>
           )}
+        </>
+      ) : courseUrl ? (
+        <a
+          href={courseUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 rounded-xl bg-nova-accent/15 border border-nova-accent/40 px-4 py-2.5 text-sm font-medium text-nova-accent hover:bg-nova-accent/25 transition-all"
+        >
+          Open this practice in your course <ExternalLink className="w-4 h-4" />
+        </a>
+      ) : (
+        <div className="rounded-lg border border-dashed border-nova-border px-3 py-2.5">
+          <p className="text-xs text-nova-dim">Audio is not added yet. Do this one from your course.</p>
         </div>
       )}
 
