@@ -215,3 +215,67 @@ export interface AppState {
   chatMessages: ChatMessage[]
   insights: UserInsight[]
 }
+
+// ─── NOVA Compass (the 5-step method check-in) ───────────────────────────────
+
+export type MethodStep = 'reset' | 'realize' | 'regulate' | 'release' | 'rewire'
+export type ResetResolution = 'know' | 'maybe' | 'deeper'
+export type RegulateState = 'high_activation' | 'charged' | 'low_energy' | 'scattered' | 'balanced'
+export type RegulateTarget =
+  | 't_calm'
+  | 't_grounded'
+  | 't_energized'
+  | 't_clear'
+  | 't_focused'
+  | 't_open'
+  | 't_confident'
+  | 't_present'
+  | 't_other'
+export type PresenceLevel = 'yes' | 'somewhat' | 'no'
+
+export interface MethodCheckIn {
+  id: string
+  userId: string
+  date: string
+  createdAt: string
+  completedAt?: string
+  mode?: 'guided' | 'quick'
+  // Snapshot
+  energyBefore?: number
+  tensionBefore?: number
+  situation?: string
+  // Reset
+  drains: string[]
+  resetResolution?: ResetResolution
+  resetAction?: string
+  // Realize
+  thoughts: string[]
+  emotions: string[]
+  body: string[]
+  attention: string[]
+  behaviour: string[]
+  pattern?: string
+  underneath?: string
+  // Regulate
+  state?: RegulateState
+  target?: RegulateTarget
+  tensionAfterPractice?: number
+  presence?: PresenceLevel
+  regulationRounds: number
+  // Release
+  releaseTypes: string[]
+  releaseActions: string[]
+  // Rewire
+  rewireState: string[]
+  rewireBelief: string[]
+  rewireIdentity: string[]
+  rewireResponse: string[]
+  rewireFocus: string[]
+  carryForward?: string
+  // Tracking
+  practicesUsed: string[]
+  stepsVisited: MethodStep[]
+  // After
+  energyAfter?: number
+  tensionAfter?: number
+}

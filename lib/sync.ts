@@ -7,7 +7,7 @@
 // If Supabase is not configured, all functions return immediately.
 
 import { getSupabase } from './supabase'
-import type { NovaUser, DailyCheckIn, EmergencyEvent } from './types'
+import type { NovaUser, DailyCheckIn, EmergencyEvent, MethodCheckIn } from './types'
 
 function silent(label: string, fn: () => Promise<unknown>): void {
   fn().catch((e) => console.warn(`[NOVA sync] ${label} failed:`, e))
@@ -67,6 +67,29 @@ export function syncCheckIn(checkIn: DailyCheckIn): void {
       ai_summary: checkIn.aiSummary ?? null,
       ai_recommendations: checkIn.aiRecommendations ?? null,
       created_at: checkIn.createdAt,
+    })
+  )
+}
+
+// ─── Sync NOVA Compass check-in ───────────────────────────────────────────────
+
+export function syncMethodCheckIn(c: MethodCheckIn): void {
+  const sb = getSupabase()
+  if (!sb) return
+
+  silent('method-check-in', async () =>
+    sb.from('method_check_ins').upsert({
+      id: c.id,
+      user_id: c.userId,
+      date: c.date,
+      created_at: c.createdAt,
+      energy_before: c.energyBefore ?? null,
+      tension_before: c.tensionBefore ?? null,
+      energy_after: c.energyAfter ?? null,
+      tension_after: c.tensionAfter ?? null,
+      steps_visited: c.stepsVisited,
+      practices_used: c.practicesUsed,
+      data: c,
     })
   )
 }

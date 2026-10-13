@@ -13,7 +13,8 @@ import { TopBar, BottomNav, NovaLogo } from '@/components/Navigation'
 import { Card } from '@/components/ui/Card'
 import { cn, getStateLabelColor, getStateLabelBg, getProtocolColor, formatRelative } from '@/lib/utils'
 import type { DailyCheckIn } from '@/lib/types'
-import { ScanLine, Zap, MessageSquare, ChevronRight, Flame, TrendingUp, Bell, X, Clock } from 'lucide-react'
+import { ScanLine, Zap, MessageSquare, ChevronRight, Flame, TrendingUp, Bell, X, Clock, Compass } from 'lucide-react'
+import { METHOD_NAME, METHOD_PATH, METHOD_TAGLINE } from '@/lib/method'
 import { ConversionNudge } from '@/components/ConversionNudge'
 
 export default function DashboardPage() {
@@ -190,6 +191,24 @@ export default function DashboardPage() {
             </Card>
           </Link>
         </div>
+
+        {/* NOVA Compass — members only */}
+        {(user.inProgram || user.energyResetCompleted) && (
+          <Link href={METHOD_PATH}>
+            <Card glow className="border-nova-accent/40 hover:border-nova-accent/70 cursor-pointer">
+              <div className="flex items-center gap-4">
+                <div className="w-11 h-11 rounded-2xl bg-nova-accent/15 flex items-center justify-center flex-shrink-0">
+                  <Compass className="w-5 h-5 text-nova-accent" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-nova-teal">{METHOD_NAME}</p>
+                  <p className="text-sm font-semibold text-nova-text-bright">{METHOD_TAGLINE}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-nova-dim" />
+              </div>
+            </Card>
+          </Link>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">

@@ -49,8 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           saveUser(updated)
           setUser(updated)
+        }, () => {
+          // Offline or Supabase unreachable: keep the local profile
         })
-        .catch(() => {})
     }
 
     setIsLoading(false)

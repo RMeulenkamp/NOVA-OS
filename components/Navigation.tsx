@@ -60,16 +60,16 @@ export function BottomNav() {
 }
 
 export function TopBar({
-  title, subtitle, rightAction, showBack = false,
+  title, subtitle, rightAction, showBack = false, backHref = '/dashboard',
 }: {
-  title: string; subtitle?: string; rightAction?: React.ReactNode; showBack?: boolean
+  title: string; subtitle?: string; rightAction?: React.ReactNode; showBack?: boolean; backHref?: string
 }) {
   return (
     <header className="sticky top-0 z-40 bg-nova-bg/70 backdrop-blur-xl border-b border-nova-border/50">
       <div className="max-w-lg mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {showBack && (
-            <Link href="/dashboard" className="w-8 h-8 rounded-lg bg-nova-surface border border-nova-border flex items-center justify-center text-nova-muted hover:text-nova-text transition-colors text-sm">
+            <Link href={backHref} className="w-8 h-8 rounded-lg bg-nova-surface border border-nova-border flex items-center justify-center text-nova-muted hover:text-nova-text transition-colors text-sm">
               ←
             </Link>
           )}

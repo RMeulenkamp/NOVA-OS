@@ -17,7 +17,12 @@ import {
   Play,
   Video,
   ExternalLink,
+  Compass,
 } from 'lucide-react'
+import Link from 'next/link'
+import { METHOD_NAME, METHOD_PATH, METHOD_TAGLINE, STEPS } from '@/lib/method'
+import { PRACTICE_LIST } from '@/lib/practices'
+import { PracticePlayer } from '@/components/method/PracticePlayer'
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
@@ -445,11 +450,12 @@ function WeekItem({ data, isCurrentWeek, resource }: { data: typeof WEEKS[0]; is
 
 export default function MemberHubPage() {
   const { user } = useAuth()
-  const [activeTab, setActiveTab] = useState<'program' | 'supplements'>('program')
+  const [activeTab, setActiveTab] = useState<'program' | 'supplements' | 'practices'>('program')
   const [resources, setResources] = useState<Record<number, ProgramResource>>({})
 
-  const inProgram = user?.inProgram
-  const programWeek = user?.programWeek ?? 1
+  // Members = in the program, or finished it (they keep Hub access)
+  const inProgram = !!(user?.inProgram || user?.energyResetCompleted)
+  const programWeek = user?.programWeek ?? (user?.energyResetCompleted ? 7 : 1)
 
   useEffect(() => {
     const sb = getSupabase()
@@ -463,6 +469,18 @@ export default function MemberHubPage() {
         setResources(map)
       })
   }, [inProgram])
+
+  // Deep links: /member-hub?tab=practices#shake-for-sanity
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tab')
+    if (t === 'program' || t === 'supplements' || t === 'practices') setActiveTab(t)
+  }, [])
+
+  useEffect(() => {
+    if (activeTab !== 'practices' || !window.location.hash) return
+    const el = document.getElementById(window.location.hash.slice(1))
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [activeTab, inProgram])
 
   if (!inProgram) {
     return (
@@ -499,10 +517,29 @@ export default function MemberHubPage() {
           </div>
         </div>
 
+        {/* NOVA Compass */}
+        <div className="px-4 pt-4">
+          <Link href={METHOD_PATH}>
+            <Card glow className="border-nova-accent/40 hover:border-nova-accent/70 transition-all cursor-pointer">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-nova-accent/15 flex items-center justify-center flex-shrink-0">
+                  <Compass className="w-6 h-6 text-nova-accent" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-nova-teal">{METHOD_NAME}</p>
+                  <h3 className="text-base font-semibold text-nova-text-bright">{METHOD_TAGLINE}</h3>
+                  <p className="text-xs text-nova-muted mt-0.5">A short check-in. Takes a few minutes.</p>
+                </div>
+                <ChevronRight className="w-5 h-5 text-nova-dim" />
+              </div>
+            </Card>
+          </Link>
+        </div>
+
         {/* Tabs */}
         <div className="px-4 pt-4">
           <div className="flex gap-2 p-1 bg-nova-surface rounded-xl border border-nova-border">
-            {(['program', 'supplements'] as const).map((tab) => (
+            {(['program', 'supplements', 'practices'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -513,7 +550,7 @@ export default function MemberHubPage() {
                     : 'text-nova-muted hover:text-nova-text'
                 )}
               >
-                {tab === 'program' ? 'Program Guide' : 'Supplements'}
+                {tab === 'program' ? 'Program Guide' : tab === 'supplements' ? 'Supplements' : 'Practices'}
               </button>
             ))}
           </div>
@@ -530,6 +567,29 @@ export default function MemberHubPage() {
                 resource={resources[week.week]}
               />
             ))}
+          </div>
+        )}
+
+        {/* Practices tab */}
+        {activeTab === 'practices' && (
+          <div className="px-4 pt-4 pb-4 space-y-5">
+            <p className="text-xs text-nova-dim leading-relaxed px-1">
+              Your NOVA practices in one place. Use them any time, or let {METHOD_NAME} point you to the right one.
+            </p>
+            {STEPS.map((step) => {
+              const items = PRACTICE_LIST.filter((p) => p.step === step.id)
+              if (!items.length) return null
+              return (
+                <div key={step.id} className="space-y-3">
+                  <p className="text-xs uppercase tracking-wider text-nova-teal px-1">
+                    {step.label} · {step.plain}
+                  </p>
+                  {items.map((p) => (
+                    <PracticePlayer key={p.slug} slug={p.slug} />
+                  ))}
+                </div>
+              )
+            })}
           </div>
         )}
 

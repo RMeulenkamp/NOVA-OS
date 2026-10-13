@@ -7,8 +7,9 @@ import type {
   EmergencyEvent,
   ChatMessage,
   UserInsight,
+  MethodCheckIn,
 } from './types'
-import { syncUser, syncCheckIn, syncEmergencyEvent } from './sync'
+import { syncUser, syncCheckIn, syncEmergencyEvent, syncMethodCheckIn } from './sync'
 import { getSupabase } from './supabase'
 
 // ─── Keys ─────────────────────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ const KEYS = {
   EMERGENCY_EVENTS: 'nova_emergency_events',
   CHAT_MESSAGES: 'nova_chat_messages',
   INSIGHTS: 'nova_insights',
+  METHOD_CHECK_INS: 'nova_method_checkins',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -232,6 +234,40 @@ export function saveInsight(insight: UserInsight): void {
   const all = get<UserInsight>(KEYS.INSIGHTS)
   all.push(insight)
   set(KEYS.INSIGHTS, all)
+}
+
+// ─── NOVA Compass check-ins ───────────────────────────────────────────────────
+
+export function getMethodCheckIns(): MethodCheckIn[] {
+  const all = get<MethodCheckIn>(KEYS.METHOD_CHECK_INS)
+  return all.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+}
+
+export function saveMethodCheckIn(checkIn: MethodCheckIn): void {
+  const all = get<MethodCheckIn>(KEYS.METHOD_CHECK_INS)
+  const idx = all.findIndex((c) => c.id === checkIn.id)
+  if (idx >= 0) all[idx] = checkIn
+  else all.push(checkIn)
+  set(KEYS.METHOD_CHECK_INS, all)
+  syncMethodCheckIn(checkIn) // background sync to Supabase
+}
+
+export async function pullMethodCheckInsFromSupabase(userId: string): Promise<void> {
+  const sb = getSupabase()
+  if (!sb) return
+
+  const { data, error } = await sb.from('method_check_ins').select('data').eq('user_id', userId)
+  if (error || !data) return
+
+  const merged = [...get<MethodCheckIn>(KEYS.METHOD_CHECK_INS)]
+  data.forEach((row: { data: MethodCheckIn | null }) => {
+    const c = row.data
+    if (!c) return
+    const idx = merged.findIndex((m) => m.id === c.id)
+    if (idx >= 0) merged[idx] = c
+    else merged.push(c)
+  })
+  set(KEYS.METHOD_CHECK_INS, merged)
 }
 
 // ─── Analytics helpers ────────────────────────────────────────────────────────
